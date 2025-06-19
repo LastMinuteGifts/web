@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Last Minute Gift</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet"/>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: Arial, sans-serif; }
+
+    .site-header { background: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: #355; margin: 0; }
+
+    .login-button { background-color: #355; color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-size: 1rem; margin-left: 10px; }
+    .login-button:hover { background-color: #555; }
+
+    .nav-bar { background-color: #f8f8f8; border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a { text-decoration: none; color: #335; font-weight: 600; font-size: 1rem; transition: color 0.3s; }
+    .nav-links a:hover { color: #355; }
+
+    .search-wrapper { display: flex; align-items: center; }
+    .search-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+
+    #userInfo { display: none; align-items: center; gap: 10px; }
+    #greeting { font-family: 'Playfair Display', serif; font-weight: bold; color: #355; }
+    .logout-button { background-color: #355; margin-left: 10px; }
+
+    .product-section { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .product-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background-color: #fff; }
+    .product-card img { width: 100%; height: 200px; object-fit: cover; cursor: pointer; }
+    .product-info { padding: 15px; }
+    .product-info h3 { margin: 0; font-size: 1.2rem; color: #355; }
+    .product-info p { margin: 8px 0; font-size: 0.95rem; color: #555; }
+    .product-info .price { color: #000; font-weight: bold; }
+    .add-to-cart { background-color: #355; color: #fff; border: none; padding: 10px; margin-top: 10px; cursor: pointer; border-radius: 4px; width: 100%; }
+
+    .cart-section { max-width: 1200px; margin: 40px auto; padding: 20px; border-top: 1px solid #ddd; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .cart-item button { background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 999; }
+    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 300px; display: flex; flex-direction: column; gap: 10px; max-height: 90vh; overflow-y: auto; }
+
+    .modal input, .modal button { padding: 10px; font-size: 1rem; border-radius: 4px; }
+    .modal input { border: 1px solid #ccc; }
+    .modal button { background-color: #355; color: white; border: none; cursor: pointer; }
+
+    /* Floating WhatsApp Contact */
+    #floatingContact {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #floatingContact img {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 600px) {
+      #floatingContact {
+        font-size: 13px;
+        padding: 10px 12px;
+        bottom: 15px;
+        right: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="container">
+    <h1 class="logo">Last Minute Gift</h1>
+    <div>
+      <button class="login-button" id="loginBtn">Log In</button>
+      <button class="login-button" id="signUpBtn">Sign Up</button>
+      <div id="userInfo">
+        <span id="greeting"></span>
+        <button class="login-button logout-button" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+  <div class="nav-container">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#cartSection">Cart</a>
+      <a href="#">Contact Us</a>
+      <a href="#">About</a>
+    </div>
+    <div class="search-wrapper">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search..." />
+    </div>
+  </div>
+</nav>
+
+<!-- Product Section -->
+<section class="product-section">
+  <h2 style="font-family:'Playfair Display', serif; color:#355;">Gift Products</h2>
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- Cart Section -->
+<section class="cart-section" id="cartSection">
+  <h2 style="font-family:'Playfair Display', serif; color:#355;">Your Cart</h2>
+  <div id="cartItems"></div>
+</section>
+
+<!-- Floating WhatsApp Contact -->
+<div id="floatingContact">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+  <span>+91 9835946089</span>
+</div>
+
+<!-- Modals -->
+<div id="authModal" class="modal"><div class="modal-content" id="modalContent"></div></div>
+<div id="productDetailModal" class="modal"><div class="modal-content" id="productDetailContent"></div></div>
+
+<!-- JavaScript -->
+<script>
+  const products = [
+    { id: 1, name: 'Clock', price: 799, desc: 'Customize with company name, logo, photo, groom and bride name.', img: 'https://via.placeholder.com/300x200' },
+    { id: 2, name: 'Nikah Nama', price: 1199, desc: 'Perfect gift for Nikah ceremony.', img: 'https://via.placeholder.com/300x200' },
+    { id: 3, name: 'Nikah Pen', price: 199, desc: 'Customized pen for Nikah, usually used with Nikah Nama.', img: 'https://via.placeholder.com/300x200' },
+    { id: 4, name: 'Photo Frame', price: 800, desc: 'Best gift for birthdays, weddings, anniversaries, or decoration.', img: 'https://via.placeholder.com/300x200' },
+    { id: 5, name: 'Mug', price: 850, desc: 'Personalized mug with name or photo.', img: 'https://via.placeholder.com/300x200' }
+  ];
+
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let user = JSON.parse(localStorage.getItem('user')) || null;
+
+  function renderProducts(list = products) {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = list.map(p => `
+      <div class="product-card">
+        <img src="${p.img}" alt="${p.name}" onclick='showProductDetails(${JSON.stringify(p)})'>
+        <div class="product-info">
+          <h3>${p.name}</h3>
+          <p>${p.desc}</p>
+          <p class="price">₹${p.price}</p>
+          <button class="add-to-cart" onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showProductDetails(product) {
+    const modal = document.getElementById('productDetailModal');
+    document.getElementById('productDetailContent').innerHTML = `
+      <h3>${product.name}</h3>
+      <img src="${product.img}" style="width:100%; border-radius:8px;">
+      <p>${product.desc}</p>
+      <p><strong>Price:</strong> ₹${product.price}</p>
+      <button onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
+      <button onclick="closeProductDetailModal()">Close</button>
+    `;
+    modal.style.display = 'flex';
+  }
+
+  function closeProductDetailModal() {
+    document.getElementById('productDetailModal').style.display = 'none';
+  }
+
+  function addToCart(product) {
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartEl = document.getElementById('cartItems');
+    if (!cart.length) return cartEl.innerHTML = '<p>Your cart is empty.</p>';
+    cartEl.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <span>${item.name} - ₹${item.price}</span>
+        <button onclick="removeFromCart(${i})">Remove</button>
+      </div>
+    `).join('');
+  }
+
+  function handleLogin() {
+    const modal = document.getElementById('authModal');
+    document.getElementById('modalContent').innerHTML = `
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button onclick="submitLogin()">Login</button>
+    `;
+    modal.style.display = 'flex';
+  }
+
+  function handleSignUp() {
+    const modal = document.getElementById('authModal');
+    document.getElementById('modalContent').innerHTML = `
+      <input type="text" id="fullName" placeholder="Full Name">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="submitSignUp()">Sign Up</button>
+    `;
+    modal.style.display = 'flex';
+  }
+
+  function submitLogin() {
+    const email = document.getElementById('loginEmail').value.toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const found = users.find(u => u.email === email && u.password === password);
+    if (found) {
+      user = found;
+      localStorage.setItem('user', JSON.stringify(user));
+      showUserInfo(user.name);
+      document.getElementById('authModal').style.display = 'none';
+    } else alert('Invalid email or password');
+  }
+
+  function submitSignUp() {
+    const name = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value.toLowerCase();
+    const password = document.getElementById('password').value;
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.some(u => u.email === email)) return alert('User already exists.');
+    const newUser = { name, email, password };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    user = newUser;
+    localStorage.setItem('user', JSON.stringify(user));
+    showUserInfo(name);
+    document.getElementById('authModal').style.display = 'none';
+  }
+
+  function handleLogout() {
+    user = null;
+    localStorage.removeItem('user');
+    document.getElementById('userInfo').style.display = 'none';
+    document.getElementById('loginBtn').style.display = 'inline-block';
+    document.getElementById('signUpBtn').style.display = 'inline-block';
+  }
+
+  function showUserInfo(name) {
+    document.getElementById('greeting').textContent = `Hello, ${name}`;
+    document.getElementById('userInfo').style.display = 'flex';
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('signUpBtn').style.display = 'none';
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', handleLogin);
+  document.getElementById('signUpBtn').addEventListener('click', handleSignUp);
+  document.getElementById('searchInput').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+    renderProducts(filtered);
+  });
+
+  window.addEventListener('click', e => {
+    if (e.target === document.getElementById('productDetailModal')) closeProductDetailModal();
+    if (e.target === document.getElementById('authModal')) document.getElementById('authModal').style.display = 'none';
+  });
+
+  if (user) showUserInfo(user.name);
+  renderProducts();
+  renderCart();
+</script>
+
+</body>
+</html>
